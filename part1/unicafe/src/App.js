@@ -18,32 +18,66 @@ const Button = ({heading, onClick}) => {
   )
 }
 
-const Info = ({property, amount}) => {
+const Statistic = ({clicks}) => {
+  const all = clicks.good + clicks.neutral + clicks.bad;
+  const avg = (clicks.good * 1 + clicks.bad * -1) / all;
+  const positive = clicks.good * (100 / all);
+
+  if (all === 0) {
+    return (
+      <>
+        <p>No feedback given</p>
+      </>
+    )
+  }
+
   return (
     <>
-      <p>{property} {amount}</p>
+      <table>
+        <tbody>
+          <StatisticLine text="good" value={clicks.good}/>
+          <StatisticLine text="neutral" value={clicks.neutral}/>
+          <StatisticLine text="bad" value={clicks.bad}/>
+
+          <StatisticLine text="all" value={all}/>
+          <StatisticLine text="average" value={isNaN(avg) ? 0: avg}/>
+          <StatisticLine text="positive" value={isNaN(positive) ? 0 : positive + ' %'}/>
+        </tbody>
+      </table>
+      
+    </>
+  );
+}
+
+const StatisticLine = ({text, value}) => {
+  return (
+    <>
+      <tr>
+        <td>{text}</td>
+        <td>{value}</td>
+      </tr>
     </>
   );
 }
 
 const App = () => {
-  const [good, setGood] = useState(0);
-  const [neutral, setNeutral] = useState(0);
-  const [bad, setBad] = useState(0);
+  const [clicks, setClicks] = useState({
+    good: 0, neutral: 0, bad: 0
+  });
 
   const sectionOneHeading = 'give feedback';
   const sectionTwoHeading = 'statistics';
 
   const handleGood = () => {
-    setGood(good + 1);
+    setClicks({...clicks, good: clicks.good + 1});
   }
 
   const handleNeutral = () => {
-    setNeutral(neutral + 1);
+    setClicks({...clicks, neutral: clicks.neutral + 1});
   }
 
   const handleBad = () => {
-    setBad(bad + 1);
+    setClicks({...clicks, bad: clicks.bad + 1});
   }
 
   return (
@@ -53,9 +87,7 @@ const App = () => {
       <Button heading={'neutral'} onClick={handleNeutral}/>
       <Button heading={'bad'} onClick={handleBad}/>
       <Header heading={sectionTwoHeading}/>
-      <Info property={'good'} amount={good}/>
-      <Info property={'neutral'} amount={neutral}/>
-      <Info property={'bad'} amount={bad}/>
+      <Statistic clicks={clicks}/>
     </>
   );
 }
